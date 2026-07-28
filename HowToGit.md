@@ -509,6 +509,107 @@ git pull origin branch        # Trazer branch
 
 ---
 
+## Descartar Alterações de um Branch Local
+
+Às vezes precisa descartar tudo e começar do zero. Aqui estão as opções:
+
+### Descartar alterações não commitadas (ficheiros modificados)
+
+```bash
+# Descartar tudo e voltar ao último commit
+git restore .
+
+# Ou (forma antiga, ainda funciona)
+git checkout .
+
+# Descartar um ficheiro específico
+git restore src/main.py
+```
+
+### Descartar commits locais (mas manter ficheiros modificados)
+
+```bash
+# Desfazer o último commit (ficheiros ficam modificados)
+git reset HEAD~1
+
+# Desfazer os últimos 3 commits
+git reset HEAD~3
+
+# Desfazer até um commit específico (ver hash com git log --oneline)
+git reset abc1234
+```
+
+### Descartar tudo (commits E ficheiros) ⚠️ CUIDADO!
+
+```bash
+# Volta ao último commit e apaga TUDO
+git reset --hard HEAD
+
+# Volta a um commit específico e apaga tudo após esse
+git reset --hard abc1234
+
+# Volta exatamente ao remoto (se o branch está no servidor)
+git reset --hard origin/seu-branch
+```
+
+### Limpar ficheiros não rastreados (ficheiros novos nunca adicionados)
+
+```bash
+# Ver o que vai ser eliminado (sempre simular primeiro!)
+git clean -fd --dry-run
+
+# Eliminar ficheiros não rastreados
+git clean -fd
+
+# -f = force (eliminar)
+# -d = diretórios também
+```
+
+### Tabela de Comparação Rápida
+
+| Comando | O que faz | Muda Ficheiros? | Muda Commits? |
+|---------|----------|-----------------|---------------|
+| `git restore .` | Desfaz mudanças não commitadas | ✓ Desfaz | ✗ Mantém |
+| `git reset HEAD~1` | Desfaz último commit | ✗ Mantém ficheiros | ✓ Desfaz commit |
+| `git reset --hard HEAD` | Apaga tudo (IRREVERSÍVEL) | ✓ Apaga | ✓ Apaga |
+| `git clean -fd` | Remove ficheiros novos | ✓ Apaga ficheiros novos | ✗ Não afeta |
+| `git reset --hard origin/branch` | Volta exatamente ao servidor | ✓ Apaga | ✓ Apaga |
+
+### Cenários Práticos de Descartar
+
+#### Cenário 1: "Estraguei o branch, quero começar do zero"
+```bash
+# Voltar exatamente ao estado do servidor
+git fetch origin
+git reset --hard origin/seu-branch
+```
+
+#### Cenário 2: "Quero manter os ficheiros mas desfazer os commits"
+```bash
+# Desfaz último commit, ficheiros continuam modificados
+git reset HEAD~1
+
+# Agora pode fazer commits diferentes ou limpar
+git restore .
+```
+
+#### Cenário 3: "Criei ficheiros que não quero"
+```bash
+# Ver o que vai apagar (sempre verificar!)
+git clean -fd --dry-run
+
+# Depois eliminar
+git clean -fd
+```
+
+#### Cenário 4: "Tenho mudanças e quero voltar ao último commit"
+```bash
+# Desfazer todas as mudanças
+git restore .
+```
+
+---
+
 ## Cenários Comuns
 
 ### Mudou de branch sem commitar
